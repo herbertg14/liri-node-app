@@ -11,9 +11,70 @@ function showTwitter(data){
 	console.log(twitterKeys["consumer_key"]);
 }
 
-// function showSpotify(data){
+function showSpotify(data, text){
+	// console.log(text);
+	var spotify = require('spotify');
 
-// }
+	if (typeof data === "undefined"){
+
+		spotify.search({ type: 'track', query: "What's my age again" }, function(err, data) {
+		    if ( err ) {
+		        console.log('Error occurred: ' + err);
+		        return;
+		    }
+		    else{
+		    	var query = data.tracks.items[0];
+
+		    	console.log("\nArtist(s): " + query.artists[0].name);
+		    	console.log("Song Name: " + query.name);
+		    	console.log("Preview Link: " + query.external_urls.spotify);
+		    }
+		});
+	}
+	else if (text === true){
+
+		spotify.search({ type: 'track', query: data }, function(err, data) {
+		    if ( err ) {
+		        console.log('Error occurred: ' + err);
+		        return;
+		    }
+		    else{
+		    	var query = data.tracks.items[0];
+
+		    	console.log("\nArtist(s): " + query.artists[0].name);
+		    	console.log("Song Name: " + query.name);
+		    	console.log("Preview Link: " + query.external_urls.spotify);
+		    }
+		});
+	}
+	else{
+		
+		var nodeArgs = process.argv;
+		var songName = "";
+		for (var i = 3; i <nodeArgs.length; i++){
+			if (i > 3 && i < nodeArgs.length){
+				songName = songName + " " + nodeArgs[i];
+			}
+			else{
+				songName = songName + nodeArgs[i];
+			}
+		}
+
+		spotify.search({ type: 'track', query: songName }, function(err, data) {
+		    if ( err ) {
+		        console.log('Error occurred: ' + err);
+		        return;
+		    }
+		    else{
+		    	var query = data.tracks.items[0];
+
+		    	console.log("\nArtist(s): " + query.artists[0].name);
+		    	console.log("Song Name: " + query.name);
+		    	console.log("Preview Link: " + query.external_urls.spotify);
+		    }
+		});
+	}
+}
 
 function showMovie(data){
 	var request = require("request");
@@ -74,7 +135,6 @@ function showMovie(data){
 	});
 }
 
-
 function extractText(str){
 	var ret = "";
 
@@ -91,11 +151,22 @@ function showText(data){
 
 	fs.readFile("random.txt", "utf8", function(error,data){
 		var dataArr = data.split(',');
-
+		var typeRequest = dataArr[0];
 		var newString = extractText(dataArr[1]);
 
-		showMovie(newString);
-		// console.log(newString);
+		if (typeRequest == "my-tweets"){
+			showTwitter(data);
+		}
+		else if(typeRequest == "spotify-this-song"){
+			console.log("spotifying");
+			showSpotify(newString, true);
+		}
+		else if(typeRequest == "movie-this"){
+			showMovie(newString);
+		}
+		else{
+			console.log("Error: Check random.txt synthax");
+		}
 	});
 }
 
@@ -109,6 +180,7 @@ function main(){
 	}
 	else if(typeRequest == "spotify-this-song"){
 		console.log("will spotify song");
+		showSpotify(data);
 	}
 	else if(typeRequest == "movie-this"){
 		showMovie();
