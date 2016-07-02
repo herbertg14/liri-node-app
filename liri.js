@@ -1,12 +1,15 @@
-
+//access key.js
 var keys = require("./keys.js");
 
+
+//to read and write to files
 var fs = require("fs");
 
-
+//access the twitter API
 function showTwitter(data){
 	var Twitter = require('twitter');
-	 
+	
+	//Authenticate the user
 	console.log(keys.twitterKeys["consumer_key"]);
 	var client = new Twitter({
 		consumer_key: keys.twitterKeys["consumer_key"],
@@ -15,7 +18,7 @@ function showTwitter(data){
 		access_token_secret: keys.twitterKeys["access_token_secret"]
 	});
 	 
-
+	//print to the console up to 20 tweets 
 	client.get('statuses/user_timeline', function(error, tweets, response){
 	  if (!error) {
 
@@ -28,10 +31,12 @@ function showTwitter(data){
 	});
 }
 
+//access the spotify API
 function showSpotify(data, text){
-	// console.log(text);
+
 	var spotify = require('spotify');
 
+	//When there is no user input default to What's my age again
 	if (typeof data === "undefined"){
 
 		spotify.search({ type: 'track', query: "What's my age again" }, function(err, data) {
@@ -48,6 +53,7 @@ function showSpotify(data, text){
 		    }
 		});
 	}
+	//when accessing information for random.txt
 	else if (text === true){
 
 		spotify.search({ type: 'track', query: data }, function(err, data) {
@@ -64,6 +70,7 @@ function showSpotify(data, text){
 		    }
 		});
 	}
+	//when there is user input 
 	else{
 
 		var nodeArgs = process.argv;
@@ -93,9 +100,11 @@ function showSpotify(data, text){
 	}
 }
 
+//access omdb
 function showMovie(data){
 	var request = require("request");
 
+	//if not grabbing data from random.txt
 	if (typeof data === "undefined"){
 
 		var nodeArgs = process.argv;
@@ -113,12 +122,16 @@ function showMovie(data){
 			}
 		}
 
+		//if there is user input
 		if (movieName == " "){
 			var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json&tomatoes=true';
-		}else{
+		}
+		//if there is not user input
+		else{
 			var queryUrl = 'http://www.omdbapi.com/?t=' + backUpMovie +'&y=&plot=short&r=json&tomatoes=true';
 		}
 	}
+	//grabbing data from random.txt
 	else{
 		var movie = data.split(" ");
 		var movieName = "";
@@ -135,7 +148,7 @@ function showMovie(data){
 		var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json&tomatoes=true';
 	}
 
-
+	//access omdb and print to the terminal movie info
 	request(queryUrl, function (error, response, body) {
 
 		if (!error && response.statusCode == 200) {
@@ -152,6 +165,7 @@ function showMovie(data){
 	});
 }
 
+//extract strings within strings
 function extractText(str){
 	var ret = "";
 
@@ -164,47 +178,59 @@ function extractText(str){
 	return ret;
 }
 
+//access random.txt
 function showText(data){
 
+	//read the file
 	fs.readFile("random.txt", "utf8", function(error,data){
 		var dataArr = data.split(',');
 		var typeRequest = dataArr[0];
 		var newString = extractText(dataArr[1]);
 
+		//if user requests tweets
 		if (typeRequest == "my-tweets"){
 			showTwitter(data);
 		}
+		//if user request music stats 
 		else if(typeRequest == "spotify-this-song"){
 			console.log("spotifying");
 			showSpotify(newString, true);
 		}
+		//if user request movie stats
 		else if(typeRequest == "movie-this"){
 			showMovie(newString);
 		}
+		//wrong input
 		else{
 			console.log("Error: Check random.txt synthax");
 		}
 	});
 }
 
+
+//main function
 function main(){
 	var typeRequest = process.argv[2];
 	var data = process.argv[3];
 
-
+	//if user request tweets
 	if (typeRequest == "my-tweets"){
 		showTwitter(data);
 	}
+	//if user request music stats
 	else if(typeRequest == "spotify-this-song"){
 		console.log("will spotify song");
 		showSpotify(data);
 	}
+	//if user request movie stats
 	else if(typeRequest == "movie-this"){
 		showMovie();
 	}
+	//if user request random.txt
 	else if (typeRequest == "do-what-it-says"){
 		showText(data);
 	}
+	//improper input
 	else{
 		console.log("Not a proper request");
 	}
