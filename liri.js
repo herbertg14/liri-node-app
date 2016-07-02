@@ -18,26 +18,45 @@ function showTwitter(data){
 function showMovie(data){
 	var request = require("request");
 
-	var nodeArgs = process.argv;
+	if (typeof data === "undefined"){
 
-	var movieName = "";
+		var nodeArgs = process.argv;
 
-	var backUpMovie = "Mr. + Nobody";
+		var movieName = "";
 
-	for (var i = 3; i <nodeArgs.length; i++){
-		if (i > 3 && i < nodeArgs.length){
-			movieName = movieName + "+" + nodeArgs[i];
+		var backUpMovie = "Mr. + Nobody";
+
+		for (var i = 3; i <nodeArgs.length; i++){
+			if (i > 3 && i < nodeArgs.length){
+				movieName = movieName + "+" + nodeArgs[i];
+			}
+			else{
+				movieName = movieName + nodeArgs[i];
+			}
 		}
-		else{
-			movieName = movieName + nodeArgs[i];
+
+		if (movieName == " "){
+			var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json&tomatoes=true';
+		}else{
+			var queryUrl = 'http://www.omdbapi.com/?t=' + backUpMovie +'&y=&plot=short&r=json&tomatoes=true';
 		}
 	}
+	else{
+		var movie = data.split(" ");
+		var movieName = "";
 
-	if (movieName == " "){
+		for (var i = 0; i < movie.length; i++){
+			if (i > 0 && i < movie.length){
+				movieName = movieName + "+" + movie[i];
+			}
+			else{
+				movieName = movieName + movie[i];
+			}
+		}
+
 		var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json&tomatoes=true';
-	}else{
-		var queryUrl = 'http://www.omdbapi.com/?t=' + backUpMovie +'&y=&plot=short&r=json&tomatoes=true';
 	}
+
 
 	request(queryUrl, function (error, response, body) {
 
@@ -71,13 +90,12 @@ function extractText(str){
 function showText(data){
 
 	fs.readFile("random.txt", "utf8", function(error,data){
-		console.log(data);
 		var dataArr = data.split(',');
-		console.log(dataArr);
 
 		var newString = extractText(dataArr[1]);
 
-		console.log(newString);
+		showMovie(newString);
+		// console.log(newString);
 	});
 }
 
