@@ -1,5 +1,6 @@
 
 var keys = require("./keys.js");
+
 var fs = require("fs");
 
 
@@ -21,6 +22,8 @@ function showMovie(){
 
 	var movieName = "";
 
+	var backUpMovie = "Mr. + Nobody";
+
 	for (var i = 3; i <nodeArgs.length; i++){
 		if (i > 3 && i < nodeArgs.length){
 			movieName = movieName + "+" + nodeArgs[i];
@@ -30,18 +33,24 @@ function showMovie(){
 		}
 	}
 
-	var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json';
-
-	console.log(queryUrl);
+	if (movieName == " "){
+		var queryUrl = 'http://www.omdbapi.com/?t=' + movieName +'&y=&plot=short&r=json&tomatoes=true';
+	}else{
+		var queryUrl = 'http://www.omdbapi.com/?t=' + backUpMovie +'&y=&plot=short&r=json&tomatoes=true';
+	}
 
 	request(queryUrl, function (error, response, body) {
 
-		// If the request is successful (i.e. if the response status code is 200)
 		if (!error && response.statusCode == 200) {
-			console.log(body);
-			// Parse the body of the site and recover just the imdbRating
-			// (Note: The syntax below for parsing isn't obvious. Just spend a few moments dissecting it). 
-			console.log("Release Year: " + JSON.parse(body)["Year"])
+			console.log("\nTitle: " + JSON.parse(body)["Title"]);
+			console.log("Release Year: " + JSON.parse(body)["Year"]);
+			console.log("IMDB rating: " + JSON.parse(body)["imdbRating"]);
+			console.log("Country: " + JSON.parse(body)["Country"]);
+			console.log("Language: " + JSON.parse(body)["Language"]);
+			console.log("Plot: " + JSON.parse(body)["Plot"]);
+			console.log("Actors: " + JSON.parse(body)["Actors"]);
+			console.log("Rotten Tomatoes Rating: " + JSON.parse(body)["tomatoRating"]);
+			console.log("Rotten Tomatoes URL: " + JSON.parse(body)["tomatoURL"]);
 		}
 	});
 }
@@ -69,7 +78,6 @@ function main(){
 		console.log("will spotify song");
 	}
 	else if(typeRequest == "movie-this"){
-		console.log("movie request");
 		showMovie();
 	}
 	else if (typeRequest == "do-what-it-says"){
