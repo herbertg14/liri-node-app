@@ -5,10 +5,27 @@ var fs = require("fs");
 
 
 function showTwitter(data){
-	var Twitter = require("twitter");
+	var Twitter = require('twitter');
+	 
+	console.log(keys.twitterKeys["consumer_key"]);
+	var client = new Twitter({
+		consumer_key: keys.twitterKeys["consumer_key"],
+		consumer_secret: keys.twitterKeys["consumer_secret"],
+		access_token_key: keys.twitterKeys["access_token_key"],
+		access_token_secret: keys.twitterKeys["access_token_secret"]
+	});
+	 
 
-	var twitterKeys = keys.twitterKeys;
-	console.log(twitterKeys["consumer_key"]);
+	client.get('statuses/user_timeline', function(error, tweets, response){
+	  if (!error) {
+
+	    for (var tweet = 0; tweet < tweets.length; tweet++){
+	    	console.log("User: " + tweets[tweet].user.screen_name);
+	    	console.log("Time Created: " + tweets[tweet].created_at);
+	    	console.log("Text: " + tweets[tweet].text + "\n");
+	    }
+	  }
+	});
 }
 
 function showSpotify(data, text){
@@ -48,7 +65,7 @@ function showSpotify(data, text){
 		});
 	}
 	else{
-		
+
 		var nodeArgs = process.argv;
 		var songName = "";
 		for (var i = 3; i <nodeArgs.length; i++){
