@@ -15,7 +15,7 @@ function showTwitter(data){
 
 // }
 
-function showMovie(){
+function showMovie(data){
 	var request = require("request");
 
 	var nodeArgs = process.argv;
@@ -55,14 +55,29 @@ function showMovie(){
 	});
 }
 
+
+function extractText(str){
+	var ret = "";
+
+	if ( /"/.test( str ) ){
+	ret = str.match( /"(.*?)"/ )[1];
+	} else {
+	ret = str;
+	}
+
+	return ret;
+}
+
 function showText(data){
-
-
 
 	fs.readFile("random.txt", "utf8", function(error,data){
 		console.log(data);
 		var dataArr = data.split(',');
 		console.log(dataArr);
+
+		var newString = extractText(dataArr[1]);
+
+		console.log(newString);
 	});
 }
 
